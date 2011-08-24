@@ -3,7 +3,7 @@
 |                                                                             |
 |   Author: Moises P. Sena <http://moisespsena.com>                           |
 |                                                                             |
-|   Crater é um conjunto de Plugins e utilitários Java para os diversos fins  |
+|   Crater e um conjunto de Plugins e utilitários Java para os diversos fins  |
 +-----------------------------------------------------------------------------+
 
 A) Checkout Project and Submit Changes
