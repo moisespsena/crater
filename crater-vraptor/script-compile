@@ -1,0 +1,166 @@
+#!/usr/bin/php -q
+<?php
+echo <<<'EOF'
+****************************************************************
+ * Script para compile deste projeto MAVEN                    *
+ *                                                            *
+ * @author Moises P. Sena <moisespsena@gmail.com>             *
+****************************************************************
+
+EOF;
+
+class Main {
+	public function __construct() {
+		$file = __DIR__ . '/pom.xml';
+		$cnt = file_get_contents($file);
+		
+		if(!preg_match('/maven-source-plugin/i', $cnt)) {
+			if(!preg_match('/<build>/i', $cnt)) {
+				$cnt = str_replace('<dependencies>', "<build>\n</build>\n\t<dependencies>", $cnt);
+				echo "[ INFO ] No build \n";
+			}
+		
+			if(!preg_match('/<plugins>/i', $cnt)) {
+		                $cnt = str_replace('<build>', "<build>\n\t<plugins>\n\t</plugins>", $cnt);
+				echo "[ INFO ] No plugins \n";
+		        }
+		
+			echo "[ INFO ] No Source Plugin \n";
+		
+			$cnt = str_replace('<plugins>', "
+				<plugins>
+				      <plugin>
+				        <groupId>org.apache.maven.plugins</groupId>
+		        		<artifactId>maven-source-plugin</artifactId>
+					<version>2.1.2</version>
+				        <executions>
+				          <execution>
+				            <id>attach-sources</id>
+				            <phase>verify</phase>
+				            <goals>
+				              <goal>jar-no-fork</goal>
+				            </goals>
+				          </execution>
+				        </executions>
+				      </plugin>
+				", $cnt);
+		
+			file_put_contents($file, $cnt);
+		}
+		
+		Shell::exec("mvn clean compile");
+		Shell::exec("mvn clean");
+	}
+}
+
+class Shell {
+	const BUF_SIZ  = 1024;     // max buffer size
+	const FD_WRITE = 0;        // stdin
+	const FD_READ  = 1;        // stdout
+	const FD_ERR   = 2;        // stderr
+	
+	private static function procExec($cmd) {
+		$descriptorspec = array(	  
+			0 => array("pipe", "r"),
+			1 => array("pipe", "w"),
+			2 => array("pipe", "w")
+		);
+    
+		$first_exitcode = 0;
+    
+		$ptr = proc_open($cmd, $descriptorspec, $pipes, NULL, $_ENV);
+    
+		if (!is_resource($ptr)) {
+			return false;
+		}
+    
+		$errbuf = "";
+
+		while (($buffer = fgets($pipes[self::FD_READ], self::BUF_SIZ)) != NULL
+			|| ($errbuf = fgets($pipes[self::FD_ERR], self::BUF_SIZ)) != NULL) {		    
+			if (!isset($flag)) {
+				$pstatus = proc_get_status($ptr);
+				$first_exitcode = $pstatus["exitcode"];
+	  			$flag = true;
+    			}
+			if (strlen($buffer)) {
+				echo $buffer;
+			}
+			if (strlen($errbuf)) {
+				Logger::error($errbuf);
+    			}
+	    	}
+	
+		foreach ($pipes as $pipe) {
+			fclose($pipe);
+		}
+    
+		/* Get the expected *exit* code to return the value */
+		$pstatus = proc_get_status($ptr);
+
+		if (!strlen($pstatus["exitcode"]) || $pstatus["running"]) {
+			/* we can trust the retval of proc_close() */
+			if ($pstatus["running"]) {
+				proc_terminate($ptr);
+			}
+			$ret = proc_close($ptr);
+		} else {
+			if ((($first_exitcode + 256) % 256) == 255
+				&& (($pstatus["exitcode"] + 256) % 256) != 255) {
+		    		$ret = $pstatus["exitcode"];
+			}
+			elseif (!strlen($first_exitcode)) {
+				$ret = $pstatus["exitcode"];
+			}
+			elseif ((($first_exitcode + 256) % 256) != 255) {
+				$ret = $first_exitcode;
+			}
+			else {
+				$ret = 0; /* we "deduce" an EXIT_SUCCESS ;) */	        
+			}
+			proc_close($ptr);
+		}
+    
+		return ($ret + 256) % 256;
+	}
+
+	private static function getEnv() {
+		$env = `env`;
+		$env = preg_replace("/^([^=]+)=([^\n]+)\n/msi", "$1='$2'\n", $env);
+		$export = preg_replace("/^(\w)/msi", "export $1", $env);
+		$env = $env . "\n\n" . $export;
+		return $env;
+	}
+		
+	public static function exec($cmd, $exit = true) {
+		$cmd = self::getEnv() . "\n" . $cmd;
+
+		if (($ret = self::procExec($cmd)) === false) {
+			Logger::error("not enough FD or out of memory.", $exit);
+		} elseif ($ret == 127) {
+			Logger::error("Command not found (returned by sh).", $exit, $ret);
+		} else if($exit) {
+			exit($ret);
+		}
+	}	
+}
+
+class Logger {
+	public static function help() {
+		$cmd = $_SERVER ['argv'] [0];
+		echo "";
+	}
+	public static function error($msg, $exit = true, $code = 1) {
+		echo "[ERROR]: $msg\n";
+		self::help ();
+		
+		if($exit) {
+			exit ( $code );
+		}
+	}
+	public static function debug($msg) {
+		echo "[DEBUG]: $msg\n";
+	}
+}
+
+new Main();

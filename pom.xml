@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.moisespsena.crater</groupId>
+	<artifactId>crater</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Crater Java Library</name>
+	<url>http://moisespsena.com</url>
+	<description>Crater é um conjunto de Plugins e utilitários Java para os diversos fins</description>
+	<organization>
+		<name>moisespsena</name>
+		<url>http://moisespsena.com</url>
+	</organization>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<modules>
+		<module>crater-vraptor</module>
+	</modules>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://mvn-nexus:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Snapshots</name>
+			<url>http://mvn-nexus:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
