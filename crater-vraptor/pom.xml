@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>crater</artifactId>
 		<groupId>com.moisespsena.crater</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 	<name>Crater VRaptor Plugin</name>

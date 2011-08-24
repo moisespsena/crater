@@ -1,7 +1,7 @@
 +-----------------------------------------------------------------------------+
 |                       Crater VRaptor Plugin                                 |
 |                                                                             |
-|	Author: Moises P. Sena <http://moisespsena.com>                           |
+|   Author: Moises P. Sena <http://moisespsena.com>                           |
 |                                                                             |
 |   Crater é um conjunto de Plugins e utilitários Java para os diversos fins  |
 +-----------------------------------------------------------------------------+
@@ -40,9 +40,10 @@ A) Checkout Project and Submit Changes
 		$ git push -u creater-main master
 	
 	More Info:
-	+--------------------------------------------------------------------------------------+		
-	| NOTE: http://codexico.com.br/blog/linux/tutorial-simples-como-usar-o-git-e-o-github  |
-	+--------------------------------------------------------------------------------------+
+	+-------------------------------------------------------------------------------------------------------+		
+	| NOTE: http://codexico.com.br/blog/linux/tutorial-simples-como-usar-o-git-e-o-github                   |
+	|       http://www.frustrado.com.br/main/index.php/Programa%C3%A7%C3%A3o_n%C3%A3o_linear_utilizando_Git |
+	+-------------------------------------------------------------------------------------------------------+
 	
 B) Configure your development enviroment
 
